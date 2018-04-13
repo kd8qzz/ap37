@@ -210,7 +210,7 @@
       }
     }
   };
-
+// weather here
   var markets = {
     update: function() {
       get('https://api.cryptowat.ch/markets/prices', function(response) {
