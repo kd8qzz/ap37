@@ -4,7 +4,7 @@
   "description": "Cyberpunkish Launcher default script.",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard && node test/my-tests.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/kd8qzz/ap37/issues"
   },
-  "homepage": "https://github.com/kd8qzz/ap37#readme"
+  "homepage": "https://github.com/kd8qzz/ap37#readme",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
 }
