@@ -1,0 +1,22 @@
+{
+  "name": "ap37",
+  "version": "1.0.0",
+  "description": "Cyberpunkish Launcher default script.",
+  "main": "app.js",
+  "scripts": {
+    "test": "standard && node test/my-tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kd8qzz/ap37.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/kd8qzz/ap37/issues"
+  },
+  "homepage": "https://github.com/kd8qzz/ap37#readme",
+  "devDependencies": {
+    "standard": "^11.0.1"
+  }
+}
