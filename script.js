@@ -214,8 +214,8 @@
   var markets = {
     update: function() {
       get('https://api.cryptowat.ch/markets/prices', function(response) {
-        var result = JSON.parse(response).result,
-          marketString =
+        var result = JSON.parse(response).result;
+        var marketString =
           'BTC' + Math.floor(result['kraken:btcusd']) +
           ' BCH' + Math.floor(result['kraken:bchusd']) +
           ' ETH' + Math.floor(result['kraken:ethusd']) +
