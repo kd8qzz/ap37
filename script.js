@@ -1,29 +1,29 @@
-(function script () {
-  'use strict'
-  var w, h
+(function script() {
+  'use strict';
+  var w, h;
 
-  function init () {
-    ap37.setTextSize(11)
+  function init() {
+    ap37.setTextSize(11);
 
-    w = ap37.getScreenWidth()
-    h = ap37.getScreenHeight()
+    w = ap37.getScreenWidth();
+    h = ap37.getScreenHeight();
 
-    background.init()
-    print(0, 0, 'ap37-c7fe3fc0')
-    time.init()
-    notifications.init()
-    apps.init()
-    markets.init()
-    transmissions.init()
-    print(w - 3, h - 1, 'EOF')
+    background.init();
+    print(0, 0, 'ap37-c7fe3fc0');
+    time.init();
+    notifications.init();
+    apps.init();
+    markets.init();
+    transmissions.init();
+    print(w - 3, h - 1, 'EOF');
 
-    ap37.setOnTouchListener(function (x, y) {
-      notifications.onTouch(x, y)
-      apps.onTouch(x, y)
-      transmissions.onTouch(x, y)
-      lineGlitch.onTouch(x, y)
-      wordGlitch.onTouch(x, y)
-    })
+    ap37.setOnTouchListener(function(x, y) {
+      notifications.onTouch(x, y);
+      apps.onTouch(x, y);
+      transmissions.onTouch(x, y);
+      lineGlitch.onTouch(x, y);
+      wordGlitch.onTouch(x, y);
+    });
   }
 
   // modules
@@ -32,94 +32,94 @@
     buffer: [],
     bufferColors: [],
     pattern: '',
-    printPattern: function (x0, xf, y) {
+    printPattern: function(x0, xf, y) {
       print(x0, y,
         background.pattern.substring(y * w + x0, y * w + xf),
-        '#333333')
+        '#333333');
     },
-    init: function () {
-      background.pattern = rightPad(script.toString(), h * w, ' ')
+    init: function() {
+      background.pattern = rightPad(script.toString(), h * w, ' ');
 
       for (var i = 0; i < h; i++) {
-        background.buffer.push(background.pattern.substr(i * w, w))
-        background.bufferColors.push(arrayFill('#333333', w))
+        background.buffer.push(background.pattern.substr(i * w, w));
+        background.bufferColors.push(arrayFill('#333333', w));
       }
 
-      ap37.printLines(background.buffer, '#333333')
+      ap37.printLines(background.buffer, '#333333');
     }
-  }
+  };
 
   var time = {
-    update: function () {
-      var d = new Date()
+    update: function() {
+      var d = new Date();
       var time = d.getFullYear() +
         leftPad((d.getMonth() + 1).toString(), 2, '0') +
         leftPad(d.getDate().toString(), 2, '0') + ' ' +
         leftPad(d.getHours().toString(), 2, '0') +
-        leftPad(d.getMinutes().toString(), 2, '0')
-      print(w - 13, 0, time)
+        leftPad(d.getMinutes().toString(), 2, '0');
+      print(w - 13, 0, time);
     },
-    init: function () {
-      time.update()
-      setInterval(time.update, 60000)
+    init: function() {
+      time.update();
+      setInterval(time.update, 60000);
     }
-  }
+  };
 
   var notifications = {
     list: [],
     active: false,
-    update: function () {
-      notifications.active = ap37.notificationsActive()
+    update: function() {
+      notifications.active = ap37.notificationsActive();
       if (notifications.active) {
-        var nots = ap37.getNotifications()
-        notifications.list = nots
+        var nots = ap37.getNotifications();
+        notifications.list = nots;
         for (var i = 0; i < 3; i++) {
-          var y = i + 2
-          background.printPattern(0, w, y)
+          var y = i + 2;
+          background.printPattern(0, w, y);
           if (i < nots.length) {
-            nots[i].y = y
+            nots[i].y = y;
             if (i == 2 && nots.length > 3) {
-              nots[i].ellipsis = true
+              nots[i].ellipsis = true;
             }
-            notifications.printNotification(nots[i], false)
+            notifications.printNotification(nots[i], false);
           }
         }
       } else {
-        print(0, 3, 'Activate notifications')
+        print(0, 3, 'Activate notifications');
       }
     },
-    printNotification: function (notification, highlight) {
-      var name = notification.name
+    printNotification: function(notification, highlight) {
+      var name = notification.name;
       if (notification.ellipsis) {
-        var length = Math.min(name.length, w - 10)
-        name = name.substring(0, length) + '... +' +
-          (notifications.list.length - 3)
+        var length = Math.min(name.length, w - 10);
+        name = name.substring(0, length) + "... +" +
+          (notifications.list.length - 3);
       }
-      print(0, notification.y, name, highlight ? '#ff3333' : '#ffffff')
+      print(0, notification.y, name, highlight ? '#ff3333' : '#ffffff');
       if (highlight) {
-        setTimeout(function () {
-          notifications.printNotification(notification, false)
-        }, 1000)
+        setTimeout(function() {
+          notifications.printNotification(notification, false);
+        }, 1000);
       }
     },
-    init: function () {
-      ap37.setOnNotificationsListener(notifications.update)
-      notifications.update()
+    init: function() {
+      ap37.setOnNotificationsListener(notifications.update);
+      notifications.update();
     },
-    onTouch: function (x, y) {
+    onTouch: function(x, y) {
       if (notifications.active) {
         for (var i = 0; i < notifications.list.length; i++) {
           if (notifications.list[i].y === y) {
-            notifications.printNotification(notifications.list[i], true)
-            ap37.openNotification(notifications.list[i].id)
-            return
+            notifications.printNotification(notifications.list[i], true);
+            ap37.openNotification(notifications.list[i].id);
+            return;
           }
         }
       } else if (y === 3) {
-        ap37.requestNotificationsPermission()
+        ap37.requestNotificationsPermission();
       }
     }
-  }
+  };
 
   var apps = {
     list: [],
@@ -132,155 +132,155 @@
     appsPerPage: 0,
     currentPage: 0,
     isNextPageButtonVisible: false,
-    printPage: function (page) {
-      var appPos = page * apps.appsPerPage
+    printPage: function(page) {
+      var appPos = page * apps.appsPerPage;
 
       for (var x = 0; x + apps.appWidth <= w; x += apps.appWidth) {
         for (var y = apps.topMargin; y < apps.topMargin + apps.lines *
           apps.lineHeight; y += apps.lineHeight) {
-          background.printPattern(x, x + apps.appWidth, y)
+          background.printPattern(x, x + apps.appWidth, y);
           if (appPos < apps.list.length) {
-            var app = apps.list[appPos]
-            app.y = y
-            app.x0 = x
-            app.xf = x + apps.appWidth
-            apps.printApp(app, false)
-            appPos++
+            var app = apps.list[appPos];
+            app.y = y;
+            app.x0 = x;
+            app.xf = x + apps.appWidth;
+            apps.printApp(app, false);
+            appPos++;
           }
         }
       }
     },
-    printApp: function (app, highlight) {
+    printApp: function(app, highlight) {
       print(app.x0, app.y, '_' +
         app.name.substring(0, apps.appWidth - 2),
-      highlight ? '#ff3333' : '#999999')
+        highlight ? '#ff3333' : '#999999');
       if (highlight) {
-        setTimeout(function () {
-          apps.printApp(app, false)
-        }, 1000)
+        setTimeout(function() {
+          apps.printApp(app, false);
+        }, 1000);
       } else {
-        print(app.x0 + 1, app.y, app.name.substring(0, 1), '#ffffff')
+        print(app.x0 + 1, app.y, app.name.substring(0, 1), '#ffffff');
       }
     },
-    init: function () {
-      apps.list = ap37.getApps()
+    init: function() {
+      apps.list = ap37.getApps();
       apps.lines = Math.floor(
-        (h - apps.topMargin - apps.bottomMargin) / apps.lineHeight)
-      apps.appsPerLine = Math.ceil(apps.list.length / apps.lines)
-      apps.appWidth = Math.floor(w / apps.appsPerLine)
+        (h - apps.topMargin - apps.bottomMargin) / apps.lineHeight);
+      apps.appsPerLine = Math.ceil(apps.list.length / apps.lines);
+      apps.appWidth = Math.floor(w / apps.appsPerLine);
 
       // check minimum app name length
       if (apps.appWidth < 6) {
-        apps.appWidth = 6
-        apps.appsPerLine = Math.floor(w / apps.appWidth)
-        apps.isNextPageButtonVisible = true
-        print(w - 4, h - 9, '>>>')
-        print(w - 4, h - 8, '>>>')
+        apps.appWidth = 6;
+        apps.appsPerLine = Math.floor(w / apps.appWidth);
+        apps.isNextPageButtonVisible = true;
+        print(w - 4, h - 9, '>>>');
+        print(w - 4, h - 8, '>>>');
       } else {
-        apps.isNextPageButtonVisible = false
-        background.printPattern(w - 4, w, h - 9)
+        apps.isNextPageButtonVisible = false;
+        background.printPattern(w - 4, w, h - 9);
       }
 
-      apps.appsPerPage = apps.lines * apps.appsPerLine
-      apps.currentPage = 0
+      apps.appsPerPage = apps.lines * apps.appsPerLine;
+      apps.currentPage = 0;
 
-      apps.printPage(apps.currentPage)
+      apps.printPage(apps.currentPage);
 
-      ap37.setOnAppsListener(apps.init)
+      ap37.setOnAppsListener(apps.init);
     },
-    onTouch: function (x, y) {
+    onTouch: function(x, y) {
       for (var i = apps.currentPage * apps.appsPerPage; i <
         apps.list.length; i++) {
-        var app = apps.list[i]
+        var app = apps.list[i];
         if (y >= app.y && y <= app.y + 1 &&
           x >= app.x0 && x <= app.xf) {
-          apps.printApp(app, true)
-          ap37.openApp(app.id)
-          return
+          apps.printApp(app, true);
+          ap37.openApp(app.id);
+          return;
         }
       }
       if (apps.isNextPageButtonVisible &&
         y >= h - 9 && y <= h - 8 &&
         x >= w - 4 && x <= w) {
-        apps.currentPage++
+        apps.currentPage++;
         if (apps.currentPage * apps.appsPerPage >= apps.list.length) {
-          apps.currentPage = 0
+          apps.currentPage = 0;
         }
-        apps.printPage(apps.currentPage)
+        apps.printPage(apps.currentPage);
       }
     }
-  }
-  // weather here
+  };
+// weather here
   var markets = {
-    update: function () {
-      get('https://api.cryptowat.ch/markets/prices', function (response) {
-        var result = JSON.parse(response).result,
-          marketString =
+    update: function() {
+      get('https://api.cryptowat.ch/markets/prices', function(response) {
+        var result = JSON.parse(response).result;
+        var marketString =
           'BTC' + Math.floor(result['kraken:btcusd']) +
           ' BCH' + Math.floor(result['kraken:bchusd']) +
           ' ETH' + Math.floor(result['kraken:ethusd']) +
           ' ETC' + Math.floor(result['kraken:etcusd']) +
           ' LTC' + Math.floor(result['kraken:ltcusd']) +
-          ' ZEC' + Math.floor(result['kraken:zecusd'])
-        background.printPattern(0, w, h - 7)
-        print(0, h - 7, marketString)
-      })
+          ' ZEC' + Math.floor(result['kraken:zecusd']);
+        background.printPattern(0, w, h - 7);
+        print(0, h - 7, marketString);
+      });
     },
-    init: function () {
-      print(0, h - 8, '// Markets')
-      markets.update()
-      setInterval(markets.update, 60000)
+    init: function() {
+      print(0, h - 8, '// Markets');
+      markets.update();
+      setInterval(markets.update, 60000);
     }
-  }
+  };
 
   var transmissions = {
     list: [],
-    update: function () {
-      get('https://dangeru.us/api/v2/board/cyb', function (response) {
+    update: function() {
+      get('https://dangeru.us/api/v2/board/cyb', function(response) {
         var result = JSON.parse(response),
           line = h - 4,
-          t = transmissions
-        t.list = []
+          t = transmissions;
+        t.list = [];
         for (var i = 0; i < result.length && t.list.length < 3; i++) {
           if (!result[i].sticky) {
             var transmission = {
               title: result[i].title,
               url: 'https://dangeru.us/cyb/thread/' + result[i].post_id,
               y: line
-            }
-            t.list.push(transmission)
-            background.printPattern(0, w, line)
-            t.printTransmission(transmission, false)
-            line++
+            };
+            t.list.push(transmission);
+            background.printPattern(0, w, line);
+            t.printTransmission(transmission, false);
+            line++;
           }
         }
-      })
+      });
     },
-    printTransmission: function (transmission, highlight) {
+    printTransmission: function(transmission, highlight) {
       print(0, transmission.y, transmission.title,
-        highlight ? '#ff3333' : '#ffffff')
+        highlight ? '#ff3333' : '#ffffff');
       if (highlight) {
-        setTimeout(function () {
-          transmissions.printTransmission(transmission, false)
-        }, 1000)
+        setTimeout(function() {
+          transmissions.printTransmission(transmission, false);
+        }, 1000);
       }
     },
-    init: function () {
-      print(0, h - 5, '// Transmissions')
-      transmissions.update()
-      setInterval(transmissions.update, 3600000)
+    init: function() {
+      print(0, h - 5, '// Transmissions');
+      transmissions.update();
+      setInterval(transmissions.update, 3600000);
     },
-    onTouch: function (x, y) {
+    onTouch: function(x, y) {
       for (var i = 0; i < transmissions.list.length; i++) {
         if (transmissions.list[i].y === y &&
           x <= transmissions.list[i].title.length) {
-          transmissions.printTransmission(transmissions.list[i], true)
-          ap37.openLink(transmissions.list[i].url)
-          return
+          transmissions.printTransmission(transmissions.list[i], true);
+          ap37.openLink(transmissions.list[i].url);
+          return;
         }
       }
     }
-  }
+  };
 
   var wordGlitch = {
     tick: 0,
@@ -290,137 +290,138 @@
     text: [],
     active: false,
     intervalId: null,
-    update: function () {
-      var g = wordGlitch
+    update: function() {
+      var g = wordGlitch;
       if (g.tick === 0) { // generate new glitch
-        g.length = 5 + Math.floor(Math.random() * 6)
-        g.x = Math.floor(Math.random() * (w - g.length))
-        g.y = Math.floor(Math.random() * h)
+        g.length = 5 + Math.floor(Math.random() * 6);
+        g.x = Math.floor(Math.random() * (w - g.length));
+        g.y = Math.floor(Math.random() * h);
 
-        g.text = []
+        g.text = [];
         for (var i = 0; i < 5; i++) {
-          g.text.push(Math.random().toString(36).substr(2, g.length))
+          g.text.push(Math.random().toString(36).substr(2, g.length));
         }
 
-        ap37.print(g.x, g.y, g.text[g.tick], '#666666')
-        g.tick++
+        ap37.print(g.x, g.y, g.text[g.tick], '#666666');
+        g.tick++;
       } else if (g.tick === 5) { // remove glitch
         ap37.printMultipleColors(g.x, g.y,
           background.buffer[g.y].substr(g.x, g.length),
           background.bufferColors[g.y].slice(g.x, g.x + g.length)
-        )
-        g.tick = 0
+        );
+        g.tick = 0;
         if (!wordGlitch.active) {
-          clearInterval(wordGlitch.intervalId)
+          clearInterval(wordGlitch.intervalId);
         }
       } else {
-        ap37.print(g.x, g.y, g.text[g.tick], '#666666')
-        g.tick++
+        ap37.print(g.x, g.y, g.text[g.tick], '#666666');
+        g.tick++;
       }
     },
-    onTouch: function (x, y) {
+    onTouch: function(x, y) {
       if (x > w - 6 && y > h - 4) {
-        wordGlitch.active = !wordGlitch.active
+        wordGlitch.active = !wordGlitch.active;
         if (wordGlitch.active) {
-          wordGlitch.intervalId = setInterval(wordGlitch.update, 100)
+          wordGlitch.intervalId = setInterval(wordGlitch.update, 100);
         }
       }
     }
-  }
+  };
 
   var lineGlitch = {
     tick: 0,
     line: 0,
     active: false,
     intervalId: null,
-    update: function () {
-      var g = lineGlitch
+    update: function() {
+      var g = lineGlitch;
       if (g.tick === 0) { // shift line
-        g.line = 1 + Math.floor(Math.random() * h - 1)
+        g.line = 1 + Math.floor(Math.random() * h - 1);
 
         var offset = 1 + Math.floor(Math.random() * 4),
-          direction = Math.random() >= 0.5
+          direction = Math.random() >= 0.5;
 
         if (direction) {
           ap37.printMultipleColors(0, g.line,
             rightPad(
               background.buffer[g.line].substring(offset), w,
               ' '),
-            background.bufferColors[g.line].slice(offset))
+            background.bufferColors[g.line].slice(offset));
         } else {
           ap37.printMultipleColors(0, g.line,
             leftPad(background.buffer[g.line]
               .substring(0, w - offset), w, ' '),
             arrayFill('#ffffff', offset)
-              .concat(background.bufferColors[g.line]
-                .slice(0, w - offset))
-          )
+            .concat(background.bufferColors[g.line]
+              .slice(0, w - offset))
+          );
         }
-        g.tick++
+        g.tick++;
       } else { // restore line
         ap37.printMultipleColors(
           0, g.line, background.buffer[g.line],
-          background.bufferColors[g.line])
-        g.tick = 0
+          background.bufferColors[g.line]);
+        g.tick = 0;
         if (!lineGlitch.active) {
-          clearInterval(lineGlitch.intervalId)
+          clearInterval(lineGlitch.intervalId);
         }
       }
     },
-    onTouch: function (x, y) {
+    onTouch: function(x, y) {
       if (x > w - 6 && y > h - 4) {
-        lineGlitch.active = !lineGlitch.active
+        lineGlitch.active = !lineGlitch.active;
         if (lineGlitch.active) {
-          lineGlitch.intervalId = setInterval(lineGlitch.update, 200)
+          lineGlitch.intervalId = setInterval(lineGlitch.update, 200);
         }
       }
     }
-  }
+  };
 
-  // utils
+  //utils
 
-  function print (x, y, text, color) {
-    color = color || '#ffffff'
+  function print(x, y, text, color) {
+    color = color || '#ffffff';
     background.buffer[y] = background.buffer[y].substr(0, x) + text +
-      background.buffer[y].substr(x + text.length)
+      background.buffer[y].substr(x + text.length);
     for (var i = x; i < x + text.length; i++) {
-      background.bufferColors[y][i] = color
+      background.bufferColors[y][i] = color;
     }
-    ap37.print(x, y, text, color)
+    ap37.print(x, y, text, color);
   }
 
-  function get (url, callback) {
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', url, true)
-    xhr.onload = function () {
+  function get(url, callback) {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.onload = function() {
       if (xhr.status === 200) {
         callback(xhr.response)
       };
     }
-    xhr.send()
+    xhr.send();
   }
 
-  function leftPad (str, newLength, char) {
-    return newLength > str.length
-      ? new Array(newLength - str.length + 1).join(char) + str : str
+  function leftPad(str, newLength, char) {
+    return newLength > str.length ?
+      new Array(newLength - str.length + 1).join(char) + str : str;
   }
 
-  function rightPad (str, newLength, char) {
-    return newLength > str.length
-      ? str + new Array(newLength - str.length + 1).join(char) : str
+  function rightPad(str, newLength, char) {
+    return newLength > str.length ?
+      str + new Array(newLength - str.length + 1).join(char) : str;
   }
 
-  function arrayFill (value, length) {
-    var result = []
+  function arrayFill(value, length) {
+    var result = [];
     for (var i = 0; i < length; i++) {
-      result.push(value)
+      result.push(value);
     }
-    return result
+    return result;
   }
 
-  init()
-})()
+  init();
+})();
 
 // pull requests github.com/apseren/ap37
 // btc donations 1MvZ1VsC2eCHv8DFfUNk474ipNcqWmpV93
 // eth donations 0x736F85B150eF7f75ba1F8729912e950BF22014d4
+
