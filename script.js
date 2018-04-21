@@ -9,7 +9,7 @@
     h = ap37.getScreenHeight();
 
     background.init();
-    print(0, 0, 'ap37-c7fe3fc0');
+    print(0, 0, 'ap37-c7fe3fc0_kd8qzz');
     time.init();
     notifications.init();
     apps.init();
